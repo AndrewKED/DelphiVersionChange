@@ -1,0 +1,27 @@
+﻿                     KINETIC ELECTRONIC DESIGNS
+                DELPHI PROJECT VERSION NUMBER CHANGER
+                =====================================
+
+Changes to be made :
+
+* Clean up the build number issue. Changing this application's own version
+  number (without a build number change) seems to set the build number to '0'.
+  A second Rebuild is needed, and this results in a double increment of the build
+  number
+
+Changes for next release :
+
+Version 1.2.0                                               Released 2024-04-10
+-------------------------------------------------------------------------------
+* Correctly handle Builds
+
+Version 1.1.0                                               Released 2024-03-25
+-------------------------------------------------------------------------------
+* Enable/disable the "Make the change" button, based on entry validity.
+
+Version 1.0.0                                               Released 2024-03-12
+-------------------------------------------------------------------------------
+* First release
+
+
+
