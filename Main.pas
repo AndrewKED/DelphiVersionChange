@@ -37,6 +37,7 @@ type
     procedure eMajorChange(Sender: TObject);
   private
     { Private declarations }
+    procedure CheckKeyStrokes(Sender : TObject);
   public
     { Public declarations }
   end;
@@ -47,7 +48,7 @@ var
 implementation
 
 uses
-  System.Win.Registry,
+  System.Win.Registry, System.StrUtils,
   UnParseDproj,
   App_Ops, Str_Ops, Form_Ops;
 
@@ -56,6 +57,50 @@ var
   ctrlForm : TFormControl;
 
 {$R *.dfm}
+
+//***************************************************************************
+//
+//  FUNCTION  :
+//
+//  I/P       :
+//
+//  O/P       :
+//
+//  OPERATION :
+//
+//  UPDATED   :
+//
+//***************************************************************************
+procedure TForm1.CheckKeyStrokes(Sender : TObject);
+begin
+  if (Sender is TEdit) then
+  begin
+    if IsAnInteger(TEdit(Sender).Text) then
+    begin
+      Exit;
+    end
+    else if (TEdit(Sender).Text <> '') then
+    begin
+      if (Pos('.', TEdit(Sender).Text) > 0) then
+      begin
+        TEdit(Sender).Text := ReplaceStr(TEdit(Sender).Text, '.', '');
+        if (ActiveControl = eMajor) then
+          ActiveControl := eMinor
+        else if (ActiveControl = eMinor) then
+          ActiveControl := eRevision
+        else if (ActiveControl = eRevision) then
+        begin
+          if (cbChangeBuild.Checked) then
+            ActiveControl := eBuild
+          else
+            ActiveControl := bChangeVersion;
+        end // if
+        else if (ActiveControl = eBuild) then
+          ActiveControl := bChangeVersion;
+      end;
+    end; // if
+  end;
+end;
 
 //***************************************************************************
 //
@@ -198,6 +243,8 @@ begin
     ((not cbChangeBuild.Checked) or (eBuild.Text <> '')) and
     (FileExists(eProjectFile.Text))
   );
+
+  CheckKeyStrokes(Sender);
 end;
 
 //***************************************************************************

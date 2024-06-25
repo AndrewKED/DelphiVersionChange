@@ -11,6 +11,11 @@ Changes to be made :
 
 Changes for next release :
 
+Version 1.3.0                                               Released 2024-06-25
+-------------------------------------------------------------------------------
+* Move on when '.' is pressed in a version number component TEdit
+* Delphi 12
+
 Version 1.2.0                                               Released 2024-04-10
 -------------------------------------------------------------------------------
 * Correctly handle Builds

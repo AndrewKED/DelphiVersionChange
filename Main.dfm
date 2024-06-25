@@ -68,6 +68,7 @@ object Form1: TForm1
     Top = 90
     Width = 540
     Height = 226
+    TabStop = False
     Anchors = [akLeft, akTop, akRight, akBottom]
     ReadOnly = True
     ScrollBars = ssVertical
@@ -79,7 +80,6 @@ object Form1: TForm1
     Width = 45
     Height = 23
     Anchors = [akLeft, akBottom]
-    NumbersOnly = True
     TabOrder = 3
     OnChange = eMajorChange
   end
@@ -89,7 +89,6 @@ object Form1: TForm1
     Width = 45
     Height = 23
     Anchors = [akLeft, akBottom]
-    NumbersOnly = True
     TabOrder = 4
     OnChange = eMajorChange
   end
@@ -99,7 +98,6 @@ object Form1: TForm1
     Width = 45
     Height = 23
     Anchors = [akLeft, akBottom]
-    NumbersOnly = True
     TabOrder = 5
     OnChange = eMajorChange
   end
@@ -109,8 +107,7 @@ object Form1: TForm1
     Width = 45
     Height = 23
     Anchors = [akLeft, akBottom]
-    NumbersOnly = True
-    TabOrder = 7
+    TabOrder = 6
     Visible = False
     OnChange = eMajorChange
   end
@@ -119,6 +116,7 @@ object Form1: TForm1
     Top = 35
     Width = 506
     Height = 23
+    TabStop = False
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
     ReadOnly = True
@@ -131,7 +129,7 @@ object Form1: TForm1
     Height = 17
     Anchors = [akLeft, akBottom]
     Caption = 'Build'
-    TabOrder = 6
+    TabOrder = 8
     OnClick = cbChangeBuildClick
   end
   object bChangeVersion: TButton
@@ -141,7 +139,7 @@ object Form1: TForm1
     Height = 25
     Anchors = [akLeft, akBottom]
     Caption = 'Make the change'
-    TabOrder = 8
+    TabOrder = 7
     OnClick = bChangeVersionClick
   end
   object bGetProjectFile: TButton
