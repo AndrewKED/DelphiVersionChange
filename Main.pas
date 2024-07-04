@@ -15,7 +15,6 @@ type
     eMinor: TEdit;
     eRevision: TEdit;
     eBuild: TEdit;
-    eProjectFile: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -27,6 +26,7 @@ type
     bGetProjectFile: TButton;
     BindingsList1: TBindingsList;
     OpenDialog1: TOpenDialog;
+    cbProjectFile: TComboBox;
     procedure bChangeVersionClick(Sender: TObject);
     procedure bGetProjectFileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -35,6 +35,7 @@ type
     procedure FormCanResize(Sender: TObject; var NewWidth, NewHeight: Integer;
       var Resize: Boolean);
     procedure eMajorChange(Sender: TObject);
+    procedure cbProjectFileChange(Sender: TObject);
   private
     { Private declarations }
     procedure CheckKeyStrokes(Sender : TObject);
@@ -50,7 +51,7 @@ implementation
 uses
   System.Win.Registry, System.StrUtils,
   UnParseDproj,
-  App_Ops, Str_Ops, Form_Ops;
+  App_Ops, Str_Ops, Form_Ops, VCL_Ops, Ini_Ops;
 
 var
   progConfig : TRegIniFile;
@@ -120,8 +121,8 @@ var
   DprojParser : TDprojParser;
 
 begin
-  if ((OpenDialog1.FileName = '') or
-      (not FileExists(OpenDialog1.FileName))) then
+  if ((cbProjectFile.Text = '') or
+      (not FileExists(cbProjectFile.Text))) then
   begin
     MessageDlg('Invalid DPROJ project file', mtError, [mbOk], 0);
     bGetProjectFile.SetFocus;
@@ -147,11 +148,17 @@ begin
 
   DprojParser := TDprojParser.Create;
   try
-    DprojParser.DprojFile := OpenDialog1.FileName;
+    DprojParser.DprojFile := cbProjectFile.Text;
     DprojParser.VersionString :=
       eMajor.Text + '.' + eMinor.Text + '.' + eRevision.Text +
       ifthens(cbchangeBuild.Checked, '.' + eBuild.Text, '');
     DprojParser.ChangeVersion;
+
+    DprojParser.GetVersionInfo(Memo1.Lines);
+    eMajor.Text := '';
+    eMinor.Text := '';
+    eRevision.Text := '';
+    eBuild.Text := '';
 
     MessageDlg('To effect this change:' + #13 +
                '1) Expand and highlight each required Build Configuration.' + #13 +
@@ -178,27 +185,16 @@ end;
 //
 //***************************************************************************
 procedure TForm1.bGetProjectFileClick(Sender: TObject);
-var
-  DprojParser : TDprojParser;
-
 begin
+  if (cbProjectFile.Text <> '') then
+  begin
+    OpenDialog1.InitialDir := ExtractFilePath(cbProjectFile.Text);
+  end;
+
   if (OpenDialog1.Execute) then
   begin
-    eProjectFile.Text := OpenDialog1.FileName;
-
-    progConfig.WriteString('Config', 'Last Folder', ExtractFilePath(eProjectFile.Text));
-
-    DprojParser := TDprojParser.Create;
-    try
-      DprojParser.DprojFile := OpenDialog1.FileName;
-      DprojParser.GetVersionInfo(Memo1.Lines);
-
-      eMajor.SetFocus;
-
-      eMajorChange(Sender);
-    finally
-      DprojParser.Free;
-    end;
+    cbProjectFile.Text := OpenDialog1.FileName;
+    UpdateTComboBoxItems(cbProjectFile);
   end;
 end;
 
@@ -234,6 +230,39 @@ end;
 //  UPDATED   :
 //
 //***************************************************************************
+procedure TForm1.cbProjectFileChange(Sender: TObject);
+var
+  DprojParser : TDprojParser;
+
+begin
+  progConfig.WriteString('Config', 'Last Folder', ExtractFilePath(cbProjectFile.Text));
+
+  DprojParser := TDprojParser.Create;
+  try
+    DprojParser.DprojFile := cbProjectFile.Text;
+    DprojParser.GetVersionInfo(Memo1.Lines);
+
+    eMajor.SetFocus;
+
+    eMajorChange(Sender);
+  finally
+    DprojParser.Free;
+  end;
+end;
+
+//***************************************************************************
+//
+//  FUNCTION  :
+//
+//  I/P       :
+//
+//  O/P       :
+//
+//  OPERATION :
+//
+//  UPDATED   :
+//
+//***************************************************************************
 procedure TForm1.eMajorChange(Sender: TObject);
 begin
   bChangeVersion.Enabled := (
@@ -241,7 +270,7 @@ begin
     (eMinor.Text <> '') and
     (eRevision.Text <> '') and
     ((not cbChangeBuild.Checked) or (eBuild.Text <> '')) and
-    (FileExists(eProjectFile.Text))
+    (FileExists(cbProjectFile.Text))
   );
 
   CheckKeyStrokes(Sender);
@@ -280,6 +309,9 @@ end;
 //
 //***************************************************************************
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  n : Integer;
+
 begin
   SetMinimumFormSizes(ctrlForm, ClientWidth, ClientHeight);
 
@@ -287,6 +319,12 @@ begin
 
   cbChangeBuild.Checked := progConfig.ReadBool('Config', 'Use Build', FALSE);
   OpenDialog1.InitialDir := progConfig.ReadString('Config', 'Last Folder', '');
+
+  cbProjectFile.Items.Clear;
+  for n := 0 to CountValues(progConfig, 'ProjectFiles')-1 do
+  begin
+    cbProjectFile.Items.Add(progConfig.ReadString('ProjectFiles', n.ToString, ''));
+  end;
 
   Caption := Caption + ' V' + GetApplicationVersion(TRUE);
 end;
@@ -305,10 +343,18 @@ end;
 //
 //***************************************************************************
 procedure TForm1.FormDestroy(Sender: TObject);
+var
+  n : Integer;
+
 begin
   SaveFormSizePosition(self, progConfig, 'Main');
 
   progConfig.WriteBool('Config', 'Use Build', cbChangeBuild.Checked);
+
+  for n := 0 to cbProjectFile.Items.Count-1 do
+  begin
+    progConfig.WriteString('ProjectFiles', n.ToString, cbProjectFile.Items[n]);
+  end;
 end;
 
 //***************************************************************************

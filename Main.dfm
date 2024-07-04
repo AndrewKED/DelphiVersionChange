@@ -111,17 +111,6 @@ object Form1: TForm1
     Visible = False
     OnChange = eMajorChange
   end
-  object eProjectFile: TEdit
-    Left = 15
-    Top = 35
-    Width = 506
-    Height = 23
-    TabStop = False
-    Anchors = [akLeft, akTop, akRight]
-    Color = clBtnFace
-    ReadOnly = True
-    TabOrder = 0
-  end
   object cbChangeBuild: TCheckBox
     Left = 185
     Top = 344
@@ -151,6 +140,17 @@ object Form1: TForm1
     Caption = '...'
     TabOrder = 1
     OnClick = bGetProjectFileClick
+  end
+  object cbProjectFile: TComboBox
+    Left = 15
+    Top = 35
+    Width = 506
+    Height = 23
+    Anchors = [akLeft, akTop, akRight]
+    Color = clBtnFace
+    TabOrder = 0
+    TabStop = False
+    OnChange = cbProjectFileChange
   end
   object BindingsList1: TBindingsList
     Methods = <>
