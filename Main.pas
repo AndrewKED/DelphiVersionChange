@@ -36,6 +36,7 @@ type
       var Resize: Boolean);
     procedure eMajorChange(Sender: TObject);
     procedure cbProjectFileChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
     procedure CheckKeyStrokes(Sender : TObject);
@@ -195,6 +196,7 @@ begin
   begin
     cbProjectFile.Text := OpenDialog1.FileName;
     UpdateTComboBoxItems(cbProjectFile);
+    cbProjectFileChange(nil)
   end;
 end;
 
@@ -274,6 +276,28 @@ begin
   );
 
   CheckKeyStrokes(Sender);
+end;
+
+//***************************************************************************
+//
+//  FUNCTION  :
+//
+//  I/P       :
+//
+//  O/P       :
+//
+//  OPERATION :
+//
+//  UPDATED   :
+//
+//***************************************************************************
+procedure TForm1.FormActivate(Sender: TObject);
+begin
+  if (cbProjectFile.Items.Count > 0) then
+  begin
+    cbProjectFile.ItemIndex := 0;
+    cbProjectFileChange(nil);
+  end;
 end;
 
 //***************************************************************************

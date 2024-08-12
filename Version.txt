@@ -11,6 +11,11 @@ Changes to be made :
 
 Changes for next release :
 
+Version 1.5.0                                               Released 2024-08-12
+-------------------------------------------------------------------------------
+* Correct the display of a project that is selected from the browse button.
+* Reload the last-used dproj on startup, and display its information.
+
 Version 1.4.0                                               Released 2024-07-04
 -------------------------------------------------------------------------------
 * Store the most recently selected .dproj files, for quick access.
