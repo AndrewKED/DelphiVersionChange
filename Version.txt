@@ -11,6 +11,10 @@ Changes to be made :
 
 Changes for next release :
 
+Version 1.5.1                                               Released 2024-11-22
+-------------------------------------------------------------------------------
+* Correct the reloading of the last-used project
+
 Version 1.5.0                                               Released 2024-08-12
 -------------------------------------------------------------------------------
 * Correct the display of a project that is selected from the browse button.

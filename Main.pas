@@ -167,6 +167,8 @@ begin
                mtInformation, [mbOk], 0);
 
     bChangeVersion.Enabled := FALSE;
+
+    progConfig.WriteString('Config', 'Last File', cbProjectFile.Text);
   finally
     DprojParser.Free;
   end;
@@ -237,16 +239,17 @@ var
   DprojParser : TDprojParser;
 
 begin
-  progConfig.WriteString('Config', 'Last Folder', ExtractFilePath(cbProjectFile.Text));
-
   DprojParser := TDprojParser.Create;
   try
-    DprojParser.DprojFile := cbProjectFile.Text;
-    DprojParser.GetVersionInfo(Memo1.Lines);
+    if (FileExists(cbProjectFile.Text)) then
+    begin
+      DprojParser.DprojFile := cbProjectFile.Text;
+      DprojParser.GetVersionInfo(Memo1.Lines);
 
-    eMajor.SetFocus;
+      eMajor.SetFocus;
 
-    eMajorChange(Sender);
+      eMajorChange(Sender);
+    end;
   finally
     DprojParser.Free;
   end;
@@ -295,8 +298,16 @@ procedure TForm1.FormActivate(Sender: TObject);
 begin
   if (cbProjectFile.Items.Count > 0) then
   begin
-    cbProjectFile.ItemIndex := 0;
-    cbProjectFileChange(nil);
+    cbProjectFile.ItemIndex :=
+      cbProjectFile.Items.IndexOf(progConfig.ReadString('Config', 'Last File', ''));
+    if (FileExists(cbProjectFile.Text)) then
+    begin
+      cbProjectFileChange(nil);
+    end
+    else
+    begin
+      cbProjectFile.ItemIndex := -1;
+    end;
   end;
 end;
 
@@ -342,7 +353,7 @@ begin
   LoadFormSizePosition(self, progConfig, 'Main');
 
   cbChangeBuild.Checked := progConfig.ReadBool('Config', 'Use Build', FALSE);
-  OpenDialog1.InitialDir := progConfig.ReadString('Config', 'Last Folder', '');
+  OpenDialog1.InitialDir := ExtractFilePath(progConfig.ReadString('Config', 'Last File', ''));
 
   cbProjectFile.Items.Clear;
   for n := 0 to CountValues(progConfig, 'ProjectFiles')-1 do
